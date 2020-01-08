@@ -11,7 +11,8 @@ const express               = require('express'),
       passportLocalMongoose = require('passport-local-mongoose'),
       multer                = require('multer'),
       path                  = require('path'),
-      fs                    = require('fs-extra')
+      fs                    = require('fs-extra'),
+      apiRoutes             = require('./routes/api/users')
 
 // set storage engine
 const storage = multer.diskStorage({
@@ -55,6 +56,7 @@ mongoose.connect('mongodb://localhost/whatsadvertiser_adminapp', {useNewUrlParse
 app.set('view engine', 'ejs')
 // seting up body parser for post data collection
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json())
 // setting up session management
 app.use(require('express-session')({
   secret: 'Ruby is the best language to code',
@@ -69,6 +71,9 @@ app.use(express.static('public'))
 passport.use(new localStratergy(admin.authenticate()))
 passport.serializeUser(admin.serializeUser())
 passport.deserializeUser(admin.deserializeUser())
+
+// setting up API routes
+app.use('/api/users', apiRoutes)
 
 // adding routes
 app.get('/', isNotLoggedIn, (req, res) => {
